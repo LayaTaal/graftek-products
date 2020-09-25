@@ -1,0 +1,14 @@
+{
+  "name": "zinnfinity/graftek-product-accessories",
+  "description": "Extends Woocommerce for Graftek products",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Jason Zinn",
+      "email": "jason@zinnfinity.com"
+    }
+  ],
+  "require": {
+  }
+}
