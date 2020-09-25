@@ -100,4 +100,27 @@ class Graftek_Products_Public {
 
 	}
 
+	public function my_test() {
+		add_action( 'woocommerce_after_single_product_summary', array( $this, 'graftek_products_product_accessories') );
+	}
+
+	public function graftek_products_product_accessories() {
+
+		echo '<h3>Product Accessories</h3>';
+		/*
+		$product = wc_get_product( get_the_id() );
+
+		if ( empty( $product->get_attributes() ) ) {
+			return;
+		}
+
+		$args = [
+			'product'    => $product,
+			'attributes' => $product->get_attributes(),
+		];
+
+		get_template_part( plugin_dir_path( dirname( __FILE__ ) ) . 'include/views/single-product-accessories', null, $args );
+		*/
+	}
+
 }

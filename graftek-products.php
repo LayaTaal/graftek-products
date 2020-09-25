@@ -36,6 +36,11 @@ if ( ! defined( 'WPINC' ) ) {
 define( 'GRAFTEK_PRODUCTS_VERSION', '1.0.0' );
 
 /**
+ * Create settings section in Woocommerce > Products
+ */
+require_once plugin_dir_path( __FILE__ ) . 'includes/settings/wc-product-settings.php';
+
+/**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-graftek-products-activator.php
  */
