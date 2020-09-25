@@ -1,8 +1,9 @@
 {
-  "name": "layataal/graftek-product-accessories",
+  "name": "zinnfinity/graftek-product-accessories",
   "description": "Extends Woocommerce for Graftek products",
   "type": "wordpress-plugin",
   "prefer-stable": true,
+  "minimum-stability": "dev",
   "license": "GPL-3.0-or-later",
   "authors": [
     {
