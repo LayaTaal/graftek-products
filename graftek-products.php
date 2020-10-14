@@ -25,7 +25,7 @@
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
-	die;
+    die;
 }
 
 /**
@@ -35,51 +35,70 @@ if ( ! defined( 'WPINC' ) ) {
  */
 define( 'GRAFTEK_PRODUCTS_VERSION', '1.0.0' );
 
-/**
- * Create settings section in Woocommerce > Products
- */
-require_once plugin_dir_path( __FILE__ ) . 'includes/settings/wc-product-settings.php';
+if ( ! class_exists( 'GraftekProducts' ) ) {
+    /**
+     * class: GraftekProducts
+     * desc: plugin to control Graftek custom product requirements
+     */
+    class GraftekProducts {
 
-/**
- * The code that runs during plugin activation.
- * This action is documented in includes/class-graftek-products-activator.php
- */
-function activate_graftek_products() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-graftek-products-activator.php';
-	Graftek_Products_Activator::activate();
+        /**
+         * GraftekProducts constructor.
+         *
+         * Setup ACF and base plugin settings
+         */
+        public function __construct() {
+
+            // Define path and URL to the ACF plugin.
+            define( 'MY_ACF_PATH', plugin_dir_path( __FILE__ ) . '/includes/acf/' );
+            define( 'MY_ACF_URL', plugin_dir_url( __FILE__ ) . '/includes/acf/' );
+
+            // Include the ACF plugin.
+            include_once( MY_ACF_PATH . 'acf.php' );
+
+            // Customize the url setting to fix incorrect asset URLs.
+            add_filter( 'acf/settings/url', 'my_acf_settings_url' );
+            function my_acf_settings_url( $url ) {
+                return MY_ACF_URL;
+            }
+
+            // (Optional) Hide the ACF admin menu item.
+            /*
+            add_filter( 'acf/settings/show_admin', 'my_acf_settings_show_admin' );
+            function my_acf_settings_show_admin( $show_admin ) {
+                return false;
+            }
+            */
+
+            // Settings managed via ACF
+            require_once( sprintf( "%s/includes/settings.php", dirname( __FILE__ ) ) );
+            $settings = new ProductFilter_Settings( plugin_basename( __FILE__ ) );
+        }
+
+        /**
+         * Hook into the WordPress activate hook
+         */
+        public static function activate() {
+            // Do something
+        }
+
+        /**
+         * Hook into the WordPress deactivate hook
+         */
+        public static function deactivate() {
+            // Do something
+        }
+
+    }
 }
 
-/**
- * The code that runs during plugin deactivation.
- * This action is documented in includes/class-graftek-products-deactivator.php
- */
-function deactivate_graftek_products() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-graftek-products-deactivator.php';
-	Graftek_Products_Deactivator::deactivate();
+
+if ( class_exists( 'GraftekProducts' ) ) {
+
+    // Installation and uninstallation hooks
+    register_activation_hook( __FILE__, [ 'GraftekProducts', 'activate' ] );
+    register_deactivation_hook( __FILE__, [ 'GraftekProducts', 'deactivate' ] );
+
+    // instantiate the plugin class
+    $plugin = new GraftekProducts();
 }
-
-register_activation_hook( __FILE__, 'activate_graftek_products' );
-register_deactivation_hook( __FILE__, 'deactivate_graftek_products' );
-
-/**
- * The core plugin class that is used to define internationalization,
- * admin-specific hooks, and public-facing site hooks.
- */
-require plugin_dir_path( __FILE__ ) . 'includes/class-graftek-products.php';
-
-/**
- * Begins execution of the plugin.
- *
- * Since everything within the plugin is registered via hooks,
- * then kicking off the plugin from this point in the file does
- * not affect the page life cycle.
- *
- * @since    1.0.0
- */
-function run_graftek_products() {
-
-	$plugin = new Graftek_Products();
-	$plugin->run();
-
-}
-run_graftek_products();
