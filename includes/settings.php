@@ -46,11 +46,11 @@ if ( ! class_exists( 'ProductFilter_Settings' ) ) {
                 if( function_exists('acf_add_local_field_group') ):
 
                     acf_add_local_field_group(array(
-                        'key' => 'group_5f873b2257582',
-                        'title' => 'Monochrome Camera Accessories',
+                        'key' => 'group_monochrome_cameras',
+                        'title' => 'Monochrome Cameras',
                         'fields' => array(
                             array(
-                                'key' => 'field_5f873b5dfc20f',
+                                'key' => 'field_accessories',
                                 'label' => 'Accessories',
                                 'name' => 'accessories',
                                 'type' => 'repeater',
@@ -69,7 +69,7 @@ if ( ! class_exists( 'ProductFilter_Settings' ) ) {
                                 'button_label' => 'Add Accessory',
                                 'sub_fields' => array(
                                     array(
-                                        'key' => 'field_5f873bb2fc210',
+                                        'key' => 'field_accessory',
                                         'label' => 'Accessory',
                                         'name' => 'filter_category',
                                         'type' => 'taxonomy',
@@ -91,9 +91,9 @@ if ( ! class_exists( 'ProductFilter_Settings' ) ) {
                                         'multiple' => 0,
                                     ),
                                     array(
-                                        'key' => 'field_5f8747ced05a1',
+                                        'key' => 'field_filters',
                                         'label' => 'Filters',
-                                        'name' => 'rule',
+                                        'name' => 'filter_rule',
                                         'type' => 'repeater',
                                         'instructions' => 'Define rules for how to filter accessories.',
                                         'required' => 0,
@@ -110,7 +110,7 @@ if ( ! class_exists( 'ProductFilter_Settings' ) ) {
                                         'button_label' => 'Add Filter',
                                         'sub_fields' => array(
                                             array(
-                                                'key' => 'field_5f8747d9d05a2',
+                                                'key' => 'field_product_attr',
                                                 'label' => 'Product Attribute',
                                                 'name' => 'product_attribute',
                                                 'type' => 'select',
@@ -137,7 +137,7 @@ if ( ! class_exists( 'ProductFilter_Settings' ) ) {
                                                 'placeholder' => '',
                                             ),
                                             array(
-                                                'key' => 'field_5f874835d05a3',
+                                                'key' => 'field_accessory_attr',
                                                 'label' => 'Accessory Attribute',
                                                 'name' => 'accessory_attribute',
                                                 'type' => 'select',
@@ -164,7 +164,7 @@ if ( ! class_exists( 'ProductFilter_Settings' ) ) {
                                                 'placeholder' => '',
                                             ),
                                             array(
-                                                'key' => 'field_5f874849d05a4',
+                                                'key' => 'field_operator',
                                                 'label' => 'Operator',
                                                 'name' => 'operator',
                                                 'type' => 'select',

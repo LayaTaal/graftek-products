@@ -73,6 +73,9 @@ if ( ! class_exists( 'GraftekProducts' ) ) {
             // Settings managed via ACF
             require_once( sprintf( "%s/includes/settings.php", dirname( __FILE__ ) ) );
             $settings = new ProductFilter_Settings( plugin_basename( __FILE__ ) );
+
+	        require_once( sprintf( "%s/includes/GraftekAccessories.php", dirname( __FILE__ ) ) );
+	        $accessories = new Graftek_Accessories();
         }
 
         /**
