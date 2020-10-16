@@ -196,10 +196,17 @@ class Graftek_Accessories {
 			foreach ( $accessory['filters'] as $filter ) {
 
 				// Get value of current product attribute matching filter
-				$product_attr_id = $current_product_attributes['pa_family']['options'][0];
+				$attr_name = 'pa_' . $filter['product_attribute']['value'];
+				$product_attr_id = $current_product_attributes[$attr_name]['options'][0];
 
 				// Get value of current accessory attribute matching filter
-				$accessory_attr_id = $accessory_attrs['pa_family']['options'][0];
+				$attr_name = 'pa_' . $filter['accessory_attribute']['value'];
+				$accessory_attr_id = $accessory_attrs[$attr_name]['options'][0];
+
+				// TODO: Choose correct operator from filter
+				// TODO: Fallbacks in case no filter is chosen, etc.
+
+				// TODO: Add ability to work with multiple filters
 
 				// Compare them
 				if ( $accessory_attr_id === $product_attr_id ) {
