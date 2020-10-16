@@ -6,9 +6,7 @@
 
 class Graftek_Accessories {
 
-	const GROUP_PREFIX = 'group_';
-	const FIELD_PREFIX = 'field_';
-	const VIEWS_DIR = 'inc/views';
+	const VIEWS_DIR = 'views';
 
 	/**
 	 * Construct the plugin object
@@ -21,11 +19,26 @@ class Graftek_Accessories {
 	 * Initialize Product Archive
 	 */
 	function init() {
-		add_action( 'woocommerce_after_single_product_summary', [ &$this, 'show_product_accessories' ] );
+		//add_action( 'woocommerce_after_single_product_summary', [ &$this, 'render' ] );
+		add_filter( 'woocommerce_product_tabs', [ &$this, 'graftek_custom_product_tabs' ] );
+	}
+
+	function graftek_custom_product_tabs( $tabs ) {
+
+		// 2 Add accessories to tab
+
+		$tabs['product_accessories'] = array(
+			'title'    => __('Accessories', 'woocommerce'),
+			'priority' => 115,
+			'callback' => array( &$this, 'render' ),
+		);
+
+		return $tabs;
 	}
 
 	/**
 	 * Get the product category by product id
+	 *
 	 * @param $product_id
 	 *
 	 * @return object
@@ -38,6 +51,24 @@ class Graftek_Accessories {
 		}
 
 		return end( $categories );
+	}
+
+	/**
+	 * Get the current product category
+	 *
+	 * @return array
+	 */
+	function get_product_category_id(): array {
+		return get_the_terms( get_the_ID(), 'product_cat' );
+	}
+
+	/**
+	 * Get product accessories
+	 */
+	function get_product_attributes(): array {
+		$product = wc_get_product( get_the_ID() );
+
+		return $product->get_attributes();
 	}
 
 	/**
@@ -74,7 +105,7 @@ class Graftek_Accessories {
 
 		$group_id = '';
 
-		$acf_groups = $this->get_acf_groups();
+		$acf_groups  = $this->get_acf_groups();
 		$product_cat = $this->get_product_category( wc_get_product()->get_id() );
 
 		foreach ( $acf_groups as $acf_group ) {
@@ -88,39 +119,118 @@ class Graftek_Accessories {
 	}
 
 	/**
-	 * Pass data to view
+	 * Get the accessories and filters for a product category
+	 *
+	 * @return array
 	 */
-	function show_product_accessories() {
+	function get_product_accessories(): array {
 
 		$product_cat = $this->get_product_category( wc_get_product()->get_id() );
 
-		/*
-		$args = self::get_data();
-
-		get_template_part( self::VIEWS_DIR . '/single/product-accessories', null, $args );
-		*/
-		echo 'Plugin Accessories';
+		$accessories = [];
 
 		// Check for accessories in matching group and loop through them.
-		if( have_rows( $product_cat->slug, 'option' ) ):
-			while( have_rows( $product_cat->slug, 'option' ) ) : the_row();
+		if ( have_rows( $product_cat->slug, 'option' ) ):
+			while ( have_rows( $product_cat->slug, 'option' ) ) : the_row();
 
-				// Loop over sub repeater rows.
-				if( have_rows('accessories') ):
-					while( have_rows('accessories') ) : the_row();
+				// Loop over each accessory.
+				if ( have_rows( 'accessories' ) ):
+					while ( have_rows( 'accessories' ) ) : the_row();
 
-						// Get sub value.
-						$child_title = get_sub_field('accessory_type');
+						// Get accessory type information.
+						$accessory = get_sub_field( 'accessory_type' );
+						$filters   = [];
 
-						echo '<pre>';
-						var_dump( $child_title );
-						echo '</pre>';
+						// Loop over all filter rules in each accessory
+						if ( have_rows( 'filter' ) ):
+							while ( have_rows( 'filter' ) ) : the_row();
+
+								// Store filter information.
+								$filters[] = [
+									'product_attribute'   => get_sub_field( 'product_attribute' ),
+									'accessory_attribute' => get_sub_field( 'accessory_attribute' ),
+									'operator'            => get_sub_field( 'operator' ),
+								];
+
+							endwhile;
+						endif;
+
+						// Setup our accessory array
+						$accessories[] = [
+							'name'     => $accessory->name,
+							'slug'     => $accessory->slug,
+							'taxonomy' => $accessory->taxonomy,
+							'filters'  => $filters,
+						];
 
 					endwhile;
 				endif;
 
 			endwhile;
 		endif;
+
+		return $accessories;
+	}
+
+	/**
+	 * Get compatible camera accessories based on port type for now
+	 *
+	 * @return array
+	 */
+	function get_compatible_products( $accessory ) {
+
+		$current_product_attributes = $this->get_product_attributes();
+
+		$products_in_category = wc_get_products( [
+			'category' => [ $accessory['slug'] ],
+		] );
+
+		$compatible_accessories = [];
+
+		// Loop through products in this category
+		foreach ( $products_in_category as $product ) {
+
+			$accessory_attrs = $product->get_attributes();
+
+			// Loop through each filter for this category
+			foreach ( $accessory['filters'] as $filter ) {
+
+				// Get value of current product attribute matching filter
+				$product_attr_id = $current_product_attributes['pa_family']['options'][0];
+
+				// Get value of current accessory attribute matching filter
+				$accessory_attr_id = $accessory_attrs['pa_family']['options'][0];
+
+				// Compare them
+				if ( $accessory_attr_id === $product_attr_id ) {
+					$compatible_accessories[] = $product;
+				}
+
+			}
+
+		}
+
+		return $compatible_accessories;
+	}
+
+	function prepare_accessories( $accessories ) {
+
+		$i = 0;
+		foreach ( $accessories as $accessory ) {
+			$accessories[ $i ]['products'] = $this->get_compatible_products( $accessory );
+			$i ++;
+		}
+
+		return $accessories;
+
+	}
+
+	function render() {
+
+		$path        = plugin_dir_path( __FILE__ ) . self::VIEWS_DIR . '/single/product-accessories.php';
+		$accessories = $this->prepare_accessories( $this->get_product_accessories() );
+
+		include $path;
 	}
 
 }
