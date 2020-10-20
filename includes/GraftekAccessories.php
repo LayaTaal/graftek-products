@@ -209,6 +209,7 @@ class Graftek_Accessories {
 				// TODO: Add ability to work with multiple filters
 
 				// Compare them
+
 				if ( $accessory_attr_id === $product_attr_id ) {
 					$compatible_accessories[] = $product;
 				}
